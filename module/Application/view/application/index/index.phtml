@@ -1,0 +1,213 @@
+<?php 
+$title = 'Lista de Productos';
+$breadcrumb = [
+    ['text' => 'Productos', 'url' => '/', 'active' => true]
+];
+?>
+
+<div class="animate-slide-in">
+    <!-- Botón de acción principal -->
+    <div style="margin-bottom: 20px; text-align: right;">
+        <a href="/productos/create" class="btn-modern btn-primary-modern">
+            <i class="fas fa-plus"></i> Nuevo Producto
+        </a>
+    </div>
+
+    <!-- Formulario de búsqueda -->
+    <div class="search-container">
+        <form method="GET" class="search-form">
+            <input type="text" 
+                   name="search" 
+                   value="<?= htmlspecialchars($search) ?>" 
+                   placeholder="🔍 Buscar por nombre, código, email o categoría..." 
+                   class="search-input">
+            <button type="submit" class="btn-modern btn-info-modern">
+                <i class="fas fa-search"></i> Buscar
+            </button>
+            <?php if (!empty($search)): ?>
+                <a href="/" class="btn-modern" style="background: #95a5a6; color: white;">
+                    <i class="fas fa-times"></i> Limpiar
+                </a>
+            <?php endif; ?>
+        </form>
+    </div>
+
+    <?php if (empty($productos)): ?>
+        <!-- Estado vacío -->
+        <div class="modern-card">
+            <div class="modern-card-body text-center" style="padding: 60px 40px;">
+                <i class="fas fa-box-open" style="font-size: 64px; color: #bdc3c7; margin-bottom: 20px;"></i>
+                <h3 style="color: #7f8c8d; margin-bottom: 15px;">
+                    <?= $search ? 'No se encontraron productos' : 'No hay productos registrados' ?>
+                </h3>
+                <p style="color: #95a5a6; margin-bottom: 30px;">
+                    <?= $search ? 'Intenta con otros términos de búsqueda' : 'Comienza agregando tu primer producto al sistema' ?>
+                </p>
+                <a href="/productos/create" class="btn-modern btn-primary-modern">
+                    <i class="fas fa-plus"></i> Crear Primer Producto
+                </a>
+            </div>
+        </div>
+    <?php else: ?>
+        <!-- Tabla de productos -->
+        <div class="modern-card">
+            <div class="modern-card-header">
+                <h3>
+                    <i class="fas fa-list"></i> 
+                    Productos encontrados: <?= count($productos) ?>
+                    <?php if (!empty($search)): ?>
+                        <small style="opacity: 0.8; font-weight: 300;"> 
+                            - Búsqueda: "<?= htmlspecialchars($search) ?>"
+                        </small>
+                    <?php endif; ?>
+                </h3>
+            </div>
+            
+            <div class="modern-card-body" style="padding: 0;">
+                <div style="overflow-x: auto;">
+                    <table class="modern-table">
+                        <thead>
+                            <tr>
+                                <th><i class="fas fa-hashtag"></i> ID</th>
+                                <th><i class="fas fa-box"></i> Producto</th>
+                                <th><i class="fas fa-barcode"></i> Código</th>
+                                <th><i class="fas fa-tag"></i> Categoría</th>
+                                <th><i class="fas fa-dollar-sign"></i> Precio</th>
+                                <th><i class="fas fa-percent"></i> Descuento</th>
+                                <th><i class="fas fa-envelope"></i> Email</th>
+                                <th><i class="fas fa-phone"></i> Teléfono</th>
+                                <th><i class="fas fa-cogs"></i> Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php foreach ($productos as $producto): ?>
+                            <tr class="table-row-hover">
+                                <td><strong><?= $producto->id ?></strong></td>
+                                <td>
+                                    <div style="display: flex; align-items: center;">
+                                        <?php if ($producto->imagen): ?>
+                                            <div style="width: 50px; height: 50px; margin-right: 12px; overflow: hidden; border-radius: 8px; border: 2px solid #e8f5e8;">
+                                                <img src="/imagen/<?= $producto->id ?>" 
+                                                     alt="<?= htmlspecialchars($producto->nombre) ?>"
+                                                     style="width: 100%; height: 100%; object-fit: cover; cursor: pointer;"
+                                                     onclick="openImagePreview('/imagen/<?= $producto->id ?>', '<?= htmlspecialchars($producto->nombre) ?>')">
+                                            </div>
+                                        <?php else: ?>
+                                            <div style="width: 50px; height: 50px; background: #f8f9fa; border-radius: 8px; display: flex; align-items: center; justify-content: center; margin-right: 12px; border: 2px solid #dee2e6;">
+                                                <i class="fas fa-box" style="color: #95a5a6; font-size: 20px;"></i>
+                                            </div>
+                                        <?php endif; ?>
+                                        <div>
+                                            <strong><?= htmlspecialchars($producto->nombre) ?></strong>
+                                            <?php if ($producto->imagen): ?>
+                                                <br><small style="color: #27ae60;"><i class="fas fa-image"></i> Con imagen</small>
+                                            <?php else: ?>
+                                                <br><small style="color: #95a5a6;"><i class="fas fa-image-slash"></i> Sin imagen</small>
+                                            <?php endif; ?>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <code style="background: #f8f9fa; padding: 4px 8px; border-radius: 4px; color: #8e44ad;">
+                                        <?= htmlspecialchars($producto->codigo) ?>
+                                    </code>
+                                </td>
+                                <td>
+                                    <span class="badge-modern badge-category">
+                                        <?= htmlspecialchars($producto->categoriaNombre ?? 'Sin categoría') ?>
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="price-display">
+                                        S/ <?= number_format($producto->precio, 2) ?>
+                                    </span>
+                                </td>
+                                <td>
+                                    <?php if ($producto->descuentoPorcentaje > 0): ?>
+                                        <span class="badge-modern badge-discount">
+                                            <?= $producto->descuentoPorcentaje ?>%
+                                        </span>
+                                    <?php else: ?>
+                                        <span style="color: #95a5a6;">0%</span>
+                                    <?php endif; ?>
+                                </td>
+                                <td>
+                                    <a href="mailto:<?= htmlspecialchars($producto->emailContacto) ?>" style="color: #3498db; text-decoration: none;">
+                                        <?= htmlspecialchars($producto->emailContacto) ?>
+                                    </a>
+                                </td>
+                                <td>
+                                    <a href="tel:<?= htmlspecialchars($producto->telefonoSoporte) ?>" style="color: #27ae60; text-decoration: none;">
+                                        <?= htmlspecialchars($producto->telefonoSoporte) ?>
+                                    </a>
+                                </td>
+                                <td>
+                                    <div class="action-buttons">
+                                        <a href="/productos/view/<?= $producto->id ?>" 
+                                           class="btn-modern btn-info-modern" 
+                                           title="Ver detalles"
+                                           style="padding: 6px 8px;">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                        <a href="/productos/edit/<?= $producto->id ?>" 
+                                           class="btn-modern btn-warning-modern" 
+                                           title="Editar"
+                                           style="padding: 6px 8px;">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                        <a href="/productos/delete/<?= $producto->id ?>" 
+                                           class="btn-modern btn-danger-modern delete-btn" 
+                                           title="Eliminar producto"
+                                           style="padding: 6px 8px;"
+                                           data-product-name="<?= htmlspecialchars($producto->nombre) ?>">
+                                            <i class="fas fa-trash"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                            <?php endforeach; ?>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    <?php endif; ?>
+</div>
+
+<!-- Modal para preview de imagen -->
+<div id="imagePreviewModal" class="image-modal" style="display: none;">
+    <div class="image-modal-content">
+        <span class="image-modal-close">&times;</span>
+        <img id="previewImage" src="" alt="">
+        <div style="text-align: center; margin-top: 10px; color: white;">
+            <h4 id="previewTitle"></h4>
+        </div>
+    </div>
+</div>
+
+<script>
+// Función para previsualizar imagen
+function openImagePreview(src, title) {
+    const modal = document.getElementById('imagePreviewModal');
+    const modalImg = document.getElementById('previewImage');
+    const modalTitle = document.getElementById('previewTitle');
+    
+    modal.style.display = 'block';
+    modalImg.src = src;
+    modalTitle.textContent = title;
+    
+    // Cerrar con clic en X o fuera de la imagen
+    modal.onclick = function(event) {
+        if (event.target === modal || event.target.className === 'image-modal-close') {
+            modal.style.display = 'none';
+        }
+    };
+}
+
+// Cerrar modal con ESC
+document.addEventListener('keydown', function(event) {
+    if (event.key === 'Escape') {
+        document.getElementById('imagePreviewModal').style.display = 'none';
+    }
+});
+</script>

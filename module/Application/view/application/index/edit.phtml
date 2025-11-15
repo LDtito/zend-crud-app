@@ -1,0 +1,408 @@
+<?php 
+$title = 'Editar Producto #' . $producto->id;
+$breadcrumb = [
+    ['text' => 'Productos', 'url' => '/', 'active' => false],
+    ['text' => 'Editar Producto', 'url' => '', 'active' => true]
+];
+?>
+
+<div class="animate-slide-in">
+    <!-- Alertas de error -->
+    <?php if (isset($errors) && !empty($errors)): ?>
+        <div class="alert-modern alert-danger-modern">
+            <div class="alert-icon">
+                <i class="fas fa-exclamation-triangle"></i>
+            </div>
+            <div class="alert-content">
+                <h4>Errores en el formulario:</h4>
+                <ul style="margin: 8px 0 0 0; padding-left: 20px;">
+                    <?php foreach ($errors as $error): ?>
+                        <li><?= htmlspecialchars($error) ?></li>
+                    <?php endforeach; ?>
+                </ul>
+            </div>
+        </div>
+    <?php endif; ?>
+
+    <form method="POST" enctype="multipart/form-data" class="modern-form" id="productoForm">
+        <input type="hidden" name="id" value="<?= $producto->id ?>">
+        
+        <!-- Información básica -->
+        <div class="modern-card">
+            <div class="modern-card-header">
+                <h3><i class="fas fa-edit"></i> Editar Información Básica</h3>
+            </div>
+            <div class="modern-card-body">
+                <div class="form-grid">
+                    <div class="form-group-modern">
+                        <label for="nombre" class="form-label-modern required-field">
+                            <i class="fas fa-box label-icon"></i> Nombre del Producto
+                        </label>
+                        <div class="input-group-modern">
+                            <input type="text" 
+                                   class="form-control form-control-modern" 
+                                   id="nombre" 
+                                   name="nombre" 
+                                   value="<?= htmlspecialchars($producto->nombre) ?>"
+                                   maxlength="255"
+                                   required
+                                   placeholder="Ingrese el nombre del producto">
+                            <i class="fas fa-box input-group-icon"></i>
+                        </div>
+                        <small class="form-help-modern">Nombre descriptivo del producto</small>
+                    </div>
+
+                    <div class="form-group-modern">
+                        <label for="codigo" class="form-label-modern required-field">
+                            <i class="fas fa-barcode label-icon"></i> Código del Producto
+                        </label>
+                        <div class="input-group-modern">
+                            <input type="text" 
+                                   class="form-control form-control-modern" 
+                                   id="codigo" 
+                                   name="codigo" 
+                                   value="<?= htmlspecialchars($producto->codigo) ?>"
+                                   pattern="[A-Za-z0-9]+"
+                                   maxlength="100"
+                                   required
+                                   placeholder="P001, SKU123, etc.">
+                            <i class="fas fa-barcode input-group-icon"></i>
+                        </div>
+                        <small class="form-help-modern">Solo letras y números</small>
+                    </div>
+
+                    <div class="form-group-modern">
+                        <label for="categoria_id" class="form-label-modern required-field">
+                            <i class="fas fa-tag label-icon"></i> Categoría
+                        </label>
+                        <select class="form-select form-select-modern" id="categoria_id" name="categoria_id" required>
+                            <option value="">Seleccione una categoría</option>
+                            <?php foreach ($categorias as $id => $nombre): ?>
+                                <option value="<?= $id ?>" 
+                                        <?= $producto->categoriaId == $id ? 'selected' : '' ?>>
+                                    <?= htmlspecialchars($nombre) ?>
+                                </option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Información de contacto -->
+        <div class="modern-card">
+            <div class="modern-card-header">
+                <h3><i class="fas fa-address-book"></i> Información de Contacto</h3>
+            </div>
+            <div class="modern-card-body">
+                <div class="form-grid">
+                    <div class="form-group-modern">
+                        <label for="email_contacto" class="form-label-modern required-field">
+                            <i class="fas fa-envelope label-icon"></i> Email de Contacto
+                        </label>
+                        <div class="input-group-modern">
+                            <input type="email" 
+                                   class="form-control form-control-modern" 
+                                   id="email_contacto" 
+                                   name="email_contacto" 
+                                   value="<?= htmlspecialchars($producto->emailContacto) ?>"
+                                   required
+                                   placeholder="contacto@empresa.com">
+                            <i class="fas fa-envelope input-group-icon"></i>
+                        </div>
+                    </div>
+
+                    <div class="form-group-modern">
+                        <label for="telefono_soporte" class="form-label-modern required-field">
+                            <i class="fas fa-phone label-icon"></i> Teléfono de Soporte
+                        </label>
+                        <div class="input-group-modern">
+                            <input type="tel" 
+                                   class="form-control form-control-modern" 
+                                   id="telefono_soporte" 
+                                   name="telefono_soporte" 
+                                   value="<?= htmlspecialchars($producto->telefonoSoporte) ?>"
+                                   pattern="[\+]?[0-9\-\(\)\s]+"
+                                   required
+                                   placeholder="999-888-777">
+                            <i class="fas fa-phone input-group-icon"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Fechas y horarios -->
+        <div class="modern-card">
+            <div class="modern-card-header">
+                <h3><i class="fas fa-calendar-alt"></i> Fechas y Horarios</h3>
+            </div>
+            <div class="modern-card-body">
+                <div class="form-grid">
+                    <div class="form-group-modern">
+                        <label for="fecha_lanzamiento" class="form-label-modern required-field">
+                            <i class="fas fa-rocket label-icon"></i> Fecha de Lanzamiento
+                        </label>
+                        <div class="input-group-modern">
+                            <input type="date" 
+                                   class="form-control form-control-modern" 
+                                   id="fecha_lanzamiento" 
+                                   name="fecha_lanzamiento" 
+                                   value="<?= $producto->fechaLanzamiento ?>"
+                                   required>
+                            <i class="fas fa-calendar input-group-icon"></i>
+                        </div>
+                    </div>
+
+                    <div class="form-group-modern">
+                        <label for="hora_disponible" class="form-label-modern required-field">
+                            <i class="fas fa-clock label-icon"></i> Hora Disponible
+                        </label>
+                        <div class="input-group-modern">
+                            <input type="time" 
+                                   class="form-control form-control-modern" 
+                                   id="hora_disponible" 
+                                   name="hora_disponible" 
+                                   value="<?= $producto->horaDisponible ?>"
+                                   required>
+                            <i class="fas fa-clock input-group-icon"></i>
+                        </div>
+                    </div>
+
+                    <div class="form-group-modern">
+                        <label for="fecha_hora_creacion" class="form-label-modern required-field">
+                            <i class="fas fa-calendar-plus label-icon"></i> Fecha y Hora de Creación
+                        </label>
+                        <div class="input-group-modern">
+                            <input type="datetime-local" 
+                                   class="form-control form-control-modern" 
+                                   id="fecha_hora_creacion" 
+                                   name="fecha_hora_creacion" 
+                                   value="<?= str_replace(' ', 'T', $producto->fechaHoraCreacion) ?>"
+                                   required>
+                            <i class="fas fa-calendar-plus input-group-icon"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Información comercial e imagen -->
+        <div class="modern-card">
+            <div class="modern-card-header">
+                <h3><i class="fas fa-chart-line"></i> Información Comercial</h3>
+            </div>
+            <div class="modern-card-body">
+                <div class="form-grid">
+                    <div class="form-group-modern">
+                        <label for="precio" class="form-label-modern required-field">
+                            <i class="fas fa-dollar-sign label-icon"></i> Precio (S/)
+                        </label>
+                        <div class="input-group-modern">
+                            <input type="number" 
+                                   class="form-control form-control-modern" 
+                                   id="precio" 
+                                   name="precio" 
+                                   value="<?= $producto->precio ?>"
+                                   step="0.01"
+                                   min="0"
+                                   required
+                                   placeholder="0.00">
+                            <i class="fas fa-dollar-sign input-group-icon"></i>
+                        </div>
+                    </div>
+
+                    <div class="form-group-modern">
+                        <label for="descuento_porcentaje" class="form-label-modern required-field">
+                            <i class="fas fa-percent label-icon"></i> Descuento (%)
+                        </label>
+                        <div class="input-group-modern">
+                            <input type="number" 
+                                   class="form-control form-control-modern" 
+                                   id="descuento_porcentaje" 
+                                   name="descuento_porcentaje" 
+                                   value="<?= $producto->descuentoPorcentaje ?>"
+                                   step="0.01"
+                                   min="0"
+                                   max="100"
+                                   required
+                                   placeholder="0">
+                            <i class="fas fa-percent input-group-icon"></i>
+                        </div>
+                    </div>
+
+                    <!-- Imagen actual -->
+                    <?php if (!empty($producto->imagen)): ?>
+                    <div class="form-group-modern form-group-full">
+                        <label class="form-label-modern">
+                            <i class="fas fa-image label-icon"></i> Imagen Actual
+                        </label>
+                        <div style="margin-bottom: 15px; text-align: center;">
+                            <img src="/imagen/<?= $producto->id ?>" 
+                                 alt="Imagen del producto" 
+                                 style="max-width: 200px; max-height: 200px; border-radius: 12px; box-shadow: 0 8px 20px rgba(0,0,0,0.15); cursor: pointer; transition: transform 0.3s ease;" 
+                                 onclick="openImageModal('/imagen/<?= $producto->id ?>')">
+                        </div>
+                    </div>
+                    <?php endif; ?>
+
+                    <div class="form-group-modern form-group-full">
+                        <label for="imagen" class="form-label-modern">
+                            <i class="fas fa-image label-icon"></i> Nueva Imagen (opcional)
+                        </label>
+                        <label for="imagen" class="file-input-modern">
+                            <input type="file" 
+                                   id="imagen" 
+                                   name="imagen" 
+                                   accept="image/*">
+                            <div class="file-input-content">
+                                <div class="file-input-icon">
+                                    <i class="fas fa-sync-alt"></i>
+                                </div>
+                                <div class="file-input-text">Cambiar imagen del producto</div>
+                                <div class="file-input-subtext">JPG, PNG, GIF (máximo 2MB)</div>
+                            </div>
+                        </label>
+                        <small class="form-help-modern">Deje vacío si no desea cambiar la imagen</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Botones de acción -->
+        <div class="form-actions-modern">
+            <button type="submit" class="btn-modern btn-warning-modern">
+                <i class="fas fa-save"></i> Actualizar Producto
+            </button>
+            <a href="/" class="btn-modern btn-secondary-modern">
+                <i class="fas fa-arrow-left"></i> Cancelar
+            </a>
+        </div>
+    </form>
+</div>
+
+<script>
+// Validaciones JavaScript mejoradas para edición
+document.getElementById('productoForm').addEventListener('submit', function(e) {
+    let valid = true;
+    const errors = [];
+    
+    // Limpiar errores previos
+    document.querySelectorAll('.form-input-modern, .form-select-modern').forEach(input => {
+        input.classList.remove('error');
+    });
+    
+    // Validar nombre
+    const nombre = document.getElementById('nombre').value.trim();
+    if (!nombre) {
+        errors.push('El nombre es requerido');
+        document.getElementById('nombre').classList.add('error');
+        valid = false;
+    }
+    
+    // Validar código alfanumérico
+    const codigo = document.getElementById('codigo').value.trim();
+    if (!codigo) {
+        errors.push('El código es requerido');
+        document.getElementById('codigo').classList.add('error');
+        valid = false;
+    } else if (!/^[A-Za-z0-9]+$/.test(codigo)) {
+        errors.push('El código solo puede contener letras y números');
+        document.getElementById('codigo').classList.add('error');
+        valid = false;
+    }
+    
+    // Validar categoría
+    const categoria = document.getElementById('categoria_id').value;
+    if (!categoria) {
+        errors.push('Debe seleccionar una categoría');
+        document.getElementById('categoria_id').classList.add('error');
+        valid = false;
+    }
+    
+    // Validar email
+    const email = document.getElementById('email_contacto').value.trim();
+    if (!email) {
+        errors.push('El email es requerido');
+        document.getElementById('email_contacto').classList.add('error');
+        valid = false;
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        errors.push('El email no es válido');
+        document.getElementById('email_contacto').classList.add('error');
+        valid = false;
+    }
+    
+    // Validar teléfono
+    const telefono = document.getElementById('telefono_soporte').value.trim();
+    if (!telefono) {
+        errors.push('El teléfono es requerido');
+        document.getElementById('telefono_soporte').classList.add('error');
+        valid = false;
+    }
+    
+    // Validar precio
+    const precio = parseFloat(document.getElementById('precio').value);
+    if (isNaN(precio) || precio < 0) {
+        errors.push('El precio debe ser un número válido mayor o igual a 0');
+        document.getElementById('precio').classList.add('error');
+        valid = false;
+    }
+    
+    // Validar porcentaje
+    const descuento = parseFloat(document.getElementById('descuento_porcentaje').value);
+    if (isNaN(descuento) || descuento < 0 || descuento > 100) {
+        errors.push('El descuento debe ser un porcentaje entre 0 y 100');
+        document.getElementById('descuento_porcentaje').classList.add('error');
+        valid = false;
+    }
+    
+    if (!valid) {
+        e.preventDefault();
+        
+        // Mostrar errores de forma elegante
+        const alertHtml = `
+            <div class="alert-modern alert-danger-modern" style="position: fixed; top: 20px; right: 20px; z-index: 9999; animation: slideInRight 0.3s ease;">
+                <div class="alert-icon">
+                    <i class="fas fa-exclamation-triangle"></i>
+                </div>
+                <div class="alert-content">
+                    <h4>Errores encontrados:</h4>
+                    <ul style="margin: 8px 0 0 0; padding-left: 20px;">
+                        ${errors.map(error => `<li>${error}</li>`).join('')}
+                    </ul>
+                </div>
+                <button type="button" class="alert-close" onclick="this.parentElement.remove()">×</button>
+            </div>
+        `;
+        
+        document.body.insertAdjacentHTML('beforeend', alertHtml);
+        
+        // Auto-remover después de 5 segundos
+        setTimeout(() => {
+            const alert = document.querySelector('.alert-modern[style*="position: fixed"]');
+            if (alert) alert.remove();
+        }, 5000);
+        
+        // Scroll al primer campo con error
+        const firstError = document.querySelector('.form-input-modern.error, .form-select-modern.error');
+        if (firstError) {
+            firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            firstError.focus();
+        }
+    }
+});
+
+// Agregar efectos de interacción a los campos
+document.querySelectorAll('.form-input-modern, .form-select-modern, .form-textarea-modern').forEach(input => {
+    input.addEventListener('focus', function() {
+        this.classList.add('focused');
+    });
+    
+    input.addEventListener('blur', function() {
+        this.classList.remove('focused');
+        if (this.classList.contains('error') && this.value.trim()) {
+            this.classList.remove('error');
+        }
+    });
+});
+</script>

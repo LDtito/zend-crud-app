@@ -1,0 +1,32 @@
+﻿# Archivos de sistema
+.DS_Store
+Thumbs.db
+
+# Directorios de dependencias
+/vendor/
+/node_modules/
+
+# Archivos de configuración local
+/config/autoload/local.php
+/config/development.config.php
+
+# Archivos de caché
+/data/cache/*
+!data/cache/.gitkeep
+
+# Logs
+*.log
+
+# Archivos temporales
+*.tmp
+*.temp
+
+# Archivos IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Archivos de base de datos local
+*.sqlite
+*.db

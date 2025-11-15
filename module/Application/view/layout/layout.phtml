@@ -1,0 +1,300 @@
+<?= $this->doctype() ?>
+
+<html lang="es">
+<head>
+    <meta charset="utf-8">
+    <?= $this->headTitle('Sistema CRUD - Productos')->setSeparator(' - ')->setAutoEscape(false) ?>
+    
+    <?= $this->headMeta()
+        ->appendName('viewport', 'width=device-width, initial-scale=1.0')
+        ->appendHttpEquiv('X-UA-Compatible', 'IE=edge')
+    ?>
+
+    <!-- Styles -->
+    <?= $this->headLink(['rel' => 'shortcut icon', 'type' => 'image/vnd.microsoft.icon', 'href' => $this->basePath() . '/img/favicon.ico'])
+        ->appendStylesheet('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css')
+        ->appendStylesheet($this->basePath('css/bootstrap.min.css'))
+        ->appendStylesheet($this->basePath('css/modern-style.css'))
+    ?>
+
+    <!-- Scripts -->
+    <?= $this->inlineScript()
+        ->prependFile($this->basePath('js/bootstrap.min.js'))
+        ->prependFile($this->basePath('js/jquery-3.3.1.min.js'))
+    ?>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <i class="fas fa-shopping-bag" style="font-size: 24px; margin-bottom: 10px;"></i>
+                <h1>PRODUCTOS</h1>
+                <p>Sistema CRUD</p>
+            </div>
+            
+            <ul class="sidebar-menu">
+                <li>
+                    <a href="/" class="<?= $this->url('home') == $this->url() ? 'active' : '' ?>">
+                        <i class="fas fa-box"></i>
+                        <span>Lista de Productos</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="/categorias">
+                        <i class="fas fa-tags"></i>
+                        <span>Categorías</span>
+                    </a>
+                </li>
+                <li class="has-submenu">
+                    <a href="#" class="submenu-toggle">
+                        <i class="fas fa-plus-circle"></i>
+                        <span>Crear Nuevo</span>
+                        <i class="fas fa-chevron-down arrow"></i>
+                    </a>
+                    <ul class="submenu">
+                        <li>
+                            <a href="/productos/create">
+                                <i class="fas fa-box"></i>
+                                <span>Nuevo Producto</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="/categorias/create">
+                                <i class="fas fa-tag"></i>
+                                <span>Nueva Categoría</span>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+                <li style="margin-top: 20px; border-top: 1px solid #34495e; padding-top: 20px;">
+                    <a href="#" class="disabled" style="opacity: 0.5; cursor: not-allowed;">
+                        <i class="fas fa-search"></i>
+                        <span>Búsqueda Avanzada</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#" class="disabled" style="opacity: 0.5; cursor: not-allowed;">
+                        <i class="fas fa-chart-bar"></i>
+                        <span>Reportes</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#" class="disabled" style="opacity: 0.5; cursor: not-allowed;">
+                        <i class="fas fa-cog"></i>
+                        <span>Configuración</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#" class="disabled" style="opacity: 0.5; cursor: not-allowed;">
+                        <i class="fas fa-user"></i>
+                        <span>Mi Perfil</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Content Header -->
+            <div class="content-header">
+                <h1><?= isset($title) ? $title : 'Gestión de Productos' ?></h1>
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="/">Inicio</a></li>
+                        <?php if (isset($breadcrumb)): ?>
+                            <?php foreach ($breadcrumb as $item): ?>
+                                <li class="breadcrumb-item <?= $item['active'] ? 'active' : '' ?>">
+                                    <?= $item['active'] ? $item['text'] : '<a href="'.$item['url'].'">'.$item['text'].'</a>' ?>
+                                </li>
+                            <?php endforeach; ?>
+                        <?php endif; ?>
+                    </ol>
+                </nav>
+            </div>
+
+            <!-- Flash Messages (Simplificado) -->
+            <?php if (isset($successMessage) && !empty($successMessage)): ?>
+                <div class="alert-modern alert-success-modern" style="margin: 20px;">
+                    <div class="alert-icon">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    <div class="alert-content">
+                        <?= htmlspecialchars($successMessage) ?>
+                    </div>
+                </div>
+            <?php endif; ?>
+
+            <?php if (isset($errorMessage) && !empty($errorMessage)): ?>
+                <div class="alert-modern alert-danger-modern" style="margin: 20px;">
+                    <div class="alert-icon">
+                        <i class="fas fa-exclamation-triangle"></i>
+                    </div>
+                    <div class="alert-content">
+                        <?= htmlspecialchars($errorMessage) ?>
+                    </div>
+                </div>
+            <?php endif; ?>
+
+            <!-- Content Body -->
+            <div class="content-body">
+                <?= $this->content ?>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mobile menu toggle -->
+    <script>
+    function searchProducts() {
+        const searchInput = document.querySelector('.search-input');
+        if (searchInput) {
+            searchInput.focus();
+        } else {
+            window.location.href = '/?search=';
+        }
+    }
+
+    // Mobile sidebar toggle
+    document.addEventListener('DOMContentLoaded', function() {
+        const sidebar = document.querySelector('.sidebar');
+        const menuToggle = document.createElement('button');
+        menuToggle.className = 'mobile-menu-toggle';
+        menuToggle.innerHTML = '<i class="fas fa-bars"></i>';
+        menuToggle.style.cssText = `
+            position: fixed;
+            top: 15px;
+            left: 15px;
+            z-index: 1001;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 10px;
+            border-radius: 5px;
+            display: none;
+        `;
+        
+        document.body.appendChild(menuToggle);
+        
+        function checkMobile() {
+            if (window.innerWidth <= 768) {
+                menuToggle.style.display = 'block';
+            } else {
+                menuToggle.style.display = 'none';
+                sidebar.classList.remove('active');
+            }
+        }
+        
+        menuToggle.addEventListener('click', function() {
+            sidebar.classList.toggle('active');
+        });
+        
+        window.addEventListener('resize', checkMobile);
+        checkMobile();
+        
+        // Funcionalidad de submenu colapso
+        document.querySelectorAll('.submenu-toggle').forEach(function(toggle) {
+            toggle.addEventListener('click', function(e) {
+                e.preventDefault();
+                const parent = this.parentElement;
+                const submenu = parent.querySelector('.submenu');
+                const arrow = this.querySelector('.arrow');
+                
+                // Toggle submenu
+                submenu.classList.toggle('active');
+                parent.classList.toggle('active');
+                arrow.classList.toggle('rotated');
+            });
+        });
+    });
+    </script>
+
+    <style>
+    /* Estilos para el submenu colapso */
+    .has-submenu > a {
+        position: relative;
+    }
+    
+    .has-submenu .arrow {
+        position: absolute;
+        right: 15px;
+        top: 50%;
+        transform: translateY(-50%);
+        transition: transform 0.3s ease;
+    }
+    
+    .has-submenu .arrow.rotated {
+        transform: translateY(-50%) rotate(180deg);
+    }
+    
+    .submenu {
+        max-height: 0;
+        overflow: hidden;
+        background: rgba(0, 0, 0, 0.2);
+        border-radius: 8px;
+        margin: 8px 0 0 0;
+        transition: all 0.3s ease;
+    }
+    
+    .submenu.active {
+        max-height: 200px;
+        padding: 8px 0;
+    }
+    
+    .submenu li {
+        margin: 0;
+    }
+    
+    .submenu a {
+        padding: 10px 20px 10px 40px !important;
+        font-size: 0.9em;
+        color: rgba(255, 255, 255, 0.8);
+        border-radius: 6px;
+        margin: 2px 8px;
+        display: block;
+    }
+    
+    .submenu a:hover {
+        background: rgba(255, 255, 255, 0.1);
+        color: white;
+        transform: translateX(5px);
+    }
+    
+    .submenu a i {
+        width: 16px;
+        margin-right: 10px;
+        font-size: 0.9em;
+    }
+    </style>
+
+    <!-- Modal de confirmación para eliminar -->
+    <div id="deleteModal" class="delete-modal" style="display: none;">
+        <div class="delete-modal-overlay"></div>
+        <div class="delete-modal-content">
+            <div class="delete-modal-header">
+                <i class="fas fa-exclamation-triangle" style="color: #e85d75; font-size: 2em; margin-bottom: 15px;"></i>
+                <h3>¿Confirmar eliminación?</h3>
+            </div>
+            <div class="delete-modal-body">
+                <p>¿Está seguro de que desea eliminar este producto?</p>
+                <p style="color: #8c8c8c; font-size: 0.9em;">Esta acción no se puede deshacer.</p>
+            </div>
+            <div class="delete-modal-actions">
+                <button type="button" class="btn-modern btn-secondary-modern" onclick="closeDeleteModal()">
+                    <i class="fas fa-times"></i> Cancelar
+                </button>
+                <button type="button" class="btn-modern btn-danger-modern" onclick="confirmDelete()">
+                    <i class="fas fa-trash"></i> Eliminar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mejoras de formularios modernos -->
+    <script src="/js/form-enhancements.js"></script>
+    
+    <!-- Sistema de confirmación de eliminación -->
+    <script src="/js/delete-confirmation.js"></script>
+
+    <?= $this->inlineScript() ?>
+</body>
+</html>

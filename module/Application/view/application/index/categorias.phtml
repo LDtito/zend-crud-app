@@ -1,0 +1,203 @@
+<?php 
+$title = 'Gestión de Categorías';
+$breadcrumb = [
+    ['text' => 'Categorías', 'url' => '', 'active' => true]
+];
+?>
+
+<div class="animate-slide-in">
+    <!-- Header de categorías -->
+    <div class="view-header-actions" style="margin-bottom: 25px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;">
+            <div>
+                <h2 style="margin: 0; color: var(--text-color); display: flex; align-items: center; gap: 10px;">
+                    <i class="fas fa-tags" style="color: var(--primary-color);"></i>
+                    Gestión de Categorías
+                </h2>
+                <p style="margin: 8px 0 0 0; color: var(--text-secondary); font-size: 0.95em;">
+                    Administra las categorías de productos
+                </p>
+            </div>
+            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                <a href="/categorias/create" class="btn-modern btn-primary-modern">
+                    <i class="fas fa-plus"></i> Nueva Categoría
+                </a>
+                <a href="/" class="btn-modern btn-secondary-modern">
+                    <i class="fas fa-box"></i> Ver Productos
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <?php if (empty($categorias)): ?>
+        <!-- Estado vacío -->
+        <div class="modern-card text-center" style="padding: 60px 20px;">
+            <div style="opacity: 0.6; margin-bottom: 20px;">
+                <i class="fas fa-tags" style="font-size: 4em; color: var(--text-secondary);"></i>
+            </div>
+            <h3 style="color: var(--text-color); margin-bottom: 15px;">No hay categorías registradas</h3>
+            <p style="color: var(--text-secondary); margin-bottom: 25px; max-width: 400px; margin-left: auto; margin-right: auto;">
+                Comienza creando tu primera categoría para organizar mejor tus productos.
+            </p>
+            <a href="/categorias/create" class="btn-modern btn-primary-modern">
+                <i class="fas fa-plus"></i> Crear Primera Categoría
+            </a>
+        </div>
+    <?php else: ?>
+        <!-- Tabla de categorías -->
+        <div class="modern-card">
+            <div class="modern-card-body" style="padding: 0;">
+                <div class="table-responsive">
+                    <table class="modern-table">
+                        <thead>
+                            <tr>
+                                <th style="width: 80px;">ID</th>
+                                <th>Nombre</th>
+                                <th>Descripción</th>
+                                <th style="width: 120px;">Estado</th>
+                                <th style="width: 140px;">Fecha Creación</th>
+                                <th style="width: 120px; text-align: center;">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php foreach ($categorias as $categoria): ?>
+                                <tr class="table-row-hover">
+                                    <td>
+                                        <span class="id-badge"><?= $categoria->id ?></span>
+                                    </td>
+                                    <td>
+                                        <div style="display: flex; align-items: center; gap: 10px;">
+                                            <i class="fas <?php 
+                                                $icons = [
+                                                    'Electrónicos' => 'fa-mobile-alt',
+                                                    'Ropa' => 'fa-tshirt',
+                                                    'Hogar' => 'fa-home',
+                                                    'Deportes' => 'fa-dumbbell',
+                                                    'Libros' => 'fa-book',
+                                                    'Salud' => 'fa-heartbeat'
+                                                ];
+                                                echo $icons[$categoria->nombre] ?? 'fa-tag';
+                                            ?>" style="color: var(--primary-color);"></i>
+                                            <strong><?= htmlspecialchars($categoria->nombre) ?></strong>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span style="color: var(--text-secondary); font-size: 0.9em;">
+                                            <?= htmlspecialchars(strlen($categoria->descripcion) > 50 ? 
+                                                substr($categoria->descripcion, 0, 50) . '...' : 
+                                                $categoria->descripcion) ?>
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <?php if ($categoria->activo): ?>
+                                            <span class="status-badge status-active">
+                                                <i class="fas fa-check-circle"></i> Activa
+                                            </span>
+                                        <?php else: ?>
+                                            <span class="status-badge status-inactive">
+                                                <i class="fas fa-times-circle"></i> Inactiva
+                                            </span>
+                                        <?php endif; ?>
+                                    </td>
+                                    <td>
+                                        <span style="font-size: 0.9em; color: var(--text-secondary);">
+                                            <?= date('d/m/Y', strtotime($categoria->createdAt ?? $categoria->created_at ?? 'now')) ?>
+                                        </span>
+                                    </td>
+                                    <td style="text-align: center;">
+                                        <div style="display: flex; gap: 8px; justify-content: center;">
+                                            <a href="/categorias/edit/<?= $categoria->id ?>" 
+                                               class="btn-action btn-edit" 
+                                               title="Editar categoría">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
+                                            <a href="#" 
+                                               class="btn-action btn-delete" 
+                                               title="Eliminar categoría"
+                                               onclick="showDeleteModal('/categorias/delete/<?= $categoria->id ?>', 'categoría')">
+                                                <i class="fas fa-trash"></i>
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                            <?php endforeach; ?>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    <?php endif; ?>
+</div>
+
+<style>
+/* Estilos específicos para tabla de categorías */
+.status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 0.8em;
+    font-weight: 600;
+}
+
+.status-active {
+    background: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+
+.status-inactive {
+    background: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+}
+
+.btn-action {
+    width: 32px;
+    height: 32px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    border: 1px solid transparent;
+}
+
+.btn-edit {
+    background: var(--warning-light);
+    color: var(--warning-color);
+    border-color: var(--warning-light);
+}
+
+.btn-edit:hover {
+    background: var(--warning-color);
+    color: white;
+    transform: translateY(-2px);
+}
+
+.btn-delete {
+    background: var(--danger-light);
+    color: var(--danger-color);
+    border-color: var(--danger-light);
+}
+
+.btn-delete:hover {
+    background: var(--danger-color);
+    color: white;
+    transform: translateY(-2px);
+}
+
+@media (max-width: 768px) {
+    .modern-table {
+        font-size: 0.85em;
+    }
+    
+    .btn-action {
+        width: 28px;
+        height: 28px;
+    }
+}
+</style>
+

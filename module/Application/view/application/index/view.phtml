@@ -1,0 +1,283 @@
+<?php 
+$title = 'Detalles del Producto #' . $producto->id;
+$breadcrumb = [
+    ['text' => 'Productos', 'url' => '/', 'active' => false],
+    ['text' => 'Ver Producto', 'url' => '', 'active' => true]
+];
+?>
+
+<div class="animate-slide-in">
+    <!-- Barra de acciones superior -->
+    <div class="view-header-actions">
+        <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+            <a href="/" class="btn-modern btn-secondary-modern">
+                <i class="fas fa-arrow-left"></i> Volver al Listado
+            </a>
+            <a href="/productos/edit/<?= $producto->id ?>" class="btn-modern btn-warning-modern">
+                <i class="fas fa-edit"></i> Editar Producto
+            </a>
+            <a href="/productos/delete/<?= $producto->id ?>" 
+               class="btn-modern btn-danger-modern"
+               onclick="return confirm('¿Está seguro de eliminar este producto?\n\nEsta acción no se puede deshacer.')">
+                <i class="fas fa-trash"></i> Eliminar
+            </a>
+        </div>
+    </div>
+
+    <!-- Contenido principal -->
+    <div class="product-view-layout">
+        <!-- Imagen del producto -->
+        <div class="product-image-section">
+            <?php if ($producto->imagen): ?>
+                <div class="modern-card">
+                    <div class="modern-card-header">
+                        <h3><i class="fas fa-image"></i> Imagen del Producto</h3>
+                    </div>
+                    <div class="modern-card-body text-center" style="padding: 20px;">
+                        <img src="/imagen/<?= $producto->id ?>" 
+                             alt="<?= htmlspecialchars($producto->nombre) ?>"
+                             class="product-image-view"
+                             onclick="openImageModal(this.src)">
+                    </div>
+                </div>
+            <?php else: ?>
+                <div class="modern-card">
+                    <div class="modern-card-body text-center" style="padding: 60px 20px;">
+                        <i class="fas fa-image" style="font-size: 64px; color: #bdc3c7; margin-bottom: 20px;"></i>
+                        <h4 style="color: #7f8c8d;">Sin imagen</h4>
+                        <p style="color: #95a5a6;">Este producto no tiene imagen asignada</p>
+                    </div>
+                </div>
+            <?php endif; ?>
+        </div>
+
+        <!-- Información del producto -->
+        <div class="product-details-section">
+            <!-- Encabezado del producto -->
+            <div class="modern-card product-header-card">
+                <div class="modern-card-body">
+                    <div class="product-title-section">
+                        <h2 class="product-name">
+                            <i class="fas fa-box"></i> 
+                            <?= htmlspecialchars($producto->nombre) ?>
+                        </h2>
+                        <div class="product-meta">
+                            <span class="badge-modern badge-category">
+                                <i class="fas fa-tag"></i> 
+                                <?= htmlspecialchars($categoria->nombre) ?>
+                            </span>
+                            <span class="product-id">
+                                ID: #<?= $producto->id ?>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Información básica -->
+            <div class="modern-card">
+                <div class="modern-card-header">
+                    <h3><i class="fas fa-info-circle"></i> Información Básica</h3>
+                </div>
+                <div class="modern-card-body">
+                    <div class="detail-grid">
+                        <div class="detail-item">
+                            <div class="detail-label">
+                                <i class="fas fa-barcode"></i> Código
+                            </div>
+                            <div class="detail-value">
+                                <code class="product-code"><?= htmlspecialchars($producto->codigo) ?></code>
+                            </div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">
+                                <i class="fas fa-dollar-sign"></i> Precio Base
+                            </div>
+                            <div class="detail-value">
+                                <span class="price-display">S/ <?= number_format($producto->precio, 2) ?></span>
+                            </div>
+                        </div>
+                        <?php if ($producto->descuentoPorcentaje > 0): ?>
+                        <div class="detail-item">
+                            <div class="detail-label">
+                                <i class="fas fa-percent"></i> Descuento
+                            </div>
+                            <div class="detail-value">
+                                <span class="badge-modern badge-discount"><?= $producto->descuentoPorcentaje ?>%</span>
+                            </div>
+                        </div>
+                        <?php endif; ?>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Información de contacto -->
+            <div class="modern-card">
+                <div class="modern-card-header">
+                    <h3><i class="fas fa-address-book"></i> Contacto y Soporte</h3>
+                </div>
+                <div class="modern-card-body">
+                    <div class="detail-grid">
+                        <div class="detail-item">
+                            <div class="detail-label">
+                                <i class="fas fa-envelope"></i> Email
+                            </div>
+                            <div class="detail-value">
+                                <a href="mailto:<?= htmlspecialchars($producto->emailContacto) ?>" 
+                                   class="contact-link email-link">
+                                    <?= htmlspecialchars($producto->emailContacto) ?>
+                                </a>
+                            </div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">
+                                <i class="fas fa-phone"></i> Teléfono
+                            </div>
+                            <div class="detail-value">
+                                <a href="tel:<?= htmlspecialchars($producto->telefonoSoporte) ?>" 
+                                   class="contact-link phone-link">
+                                    <?= htmlspecialchars($producto->telefonoSoporte) ?>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Fechas y horarios -->
+            <div class="modern-card">
+                <div class="modern-card-header">
+                    <h3><i class="fas fa-calendar-alt"></i> Fechas y Horarios</h3>
+                </div>
+                <div class="modern-card-body">
+                    <div class="detail-grid">
+                        <div class="detail-item">
+                            <div class="detail-label">
+                                <i class="fas fa-rocket"></i> Fecha de Lanzamiento
+                            </div>
+                            <div class="detail-value">
+                                <?= date('d/m/Y', strtotime($producto->fechaLanzamiento)) ?>
+                            </div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">
+                                <i class="fas fa-clock"></i> Hora Disponible
+                            </div>
+                            <div class="detail-value">
+                                <?= date('H:i', strtotime($producto->horaDisponible)) ?>
+                            </div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">
+                                <i class="fas fa-calendar-plus"></i> Creación del Producto
+                            </div>
+                            <div class="detail-value">
+                                <?= date('d/m/Y H:i', strtotime($producto->fechaHoraCreacion)) ?>
+                            </div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">
+                                <i class="fas fa-plus-circle"></i> Registro Creado
+                            </div>
+                            <div class="detail-value">
+                                <?= date('d/m/Y H:i', strtotime($producto->createdAt)) ?>
+                            </div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">
+                                <i class="fas fa-edit"></i> Última Actualización
+                            </div>
+                            <div class="detail-value">
+                                <?= date('d/m/Y H:i', strtotime($producto->updatedAt)) ?>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Resumen de precio -->
+        <div class="product-summary-section">
+            <div class="modern-card price-summary-card">
+                <div class="modern-card-header">
+                    <h3><i class="fas fa-calculator"></i> Resumen de Precio</h3>
+                </div>
+                <div class="modern-card-body text-center">
+                    <?php
+                    $precioFinal = $producto->precio * (1 - ($producto->descuentoPorcentaje / 100));
+                    ?>
+                    
+                    <?php if ($producto->descuentoPorcentaje > 0): ?>
+                        <div class="price-breakdown">
+                            <div class="original-price">
+                                <span class="price-label">Precio Original:</span>
+                                <span class="price-crossed">S/ <?= number_format($producto->precio, 2) ?></span>
+                            </div>
+                            <div class="discount-info">
+                                <span class="discount-badge">
+                                    <i class="fas fa-percent"></i> 
+                                    <?= $producto->descuentoPorcentaje ?>% DE DESCUENTO
+                                </span>
+                            </div>
+                        </div>
+                    <?php endif; ?>
+                    
+                    <div class="final-price">
+                        <span class="price-label">Precio Final:</span>
+                        <div class="final-price-amount">
+                            S/ <?= number_format($precioFinal, 2) ?>
+                        </div>
+                        <?php if ($producto->descuentoPorcentaje > 0): ?>
+                            <div class="savings">
+                                Ahorras: S/ <?= number_format($producto->precio - $precioFinal, 2) ?>
+                            </div>
+                        <?php endif; ?>
+                    </div>
+                    
+                    <div class="availability-info">
+                        <div class="availability-label">
+                            <i class="fas fa-calendar-check"></i> Disponible desde:
+                        </div>
+                        <div class="availability-date">
+                            <?= date('d/m/Y', strtotime($producto->fechaLanzamiento)) ?> 
+                            a las <?= date('H:i', strtotime($producto->horaDisponible)) ?>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para imagen -->
+<div id="imageModal" class="image-modal" style="display: none;">
+    <div class="image-modal-content">
+        <span class="image-modal-close">&times;</span>
+        <img id="modalImage" src="" alt="">
+    </div>
+</div>
+
+<script>
+// Modal para ver imagen en grande
+function openImageModal(src) {
+    const modal = document.getElementById('imageModal');
+    const modalImg = document.getElementById('modalImage');
+    
+    modal.style.display = 'block';
+    modalImg.src = src;
+    
+    // Cerrar con clic en X o fuera de la imagen
+    modal.onclick = function(event) {
+        if (event.target === modal || event.target.className === 'image-modal-close') {
+            modal.style.display = 'none';
+        }
+    };
+}
+
+// Cerrar modal con ESC
+document.addEventListener('keydown', function(event) {
+    if (event.key === 'Escape') {
+        document.getElementById('imageModal').style.display = 'none';
+    }
+});
+</script>
