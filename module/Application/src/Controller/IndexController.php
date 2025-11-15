@@ -268,5 +268,116 @@ class IndexController extends AbstractActionController
         ]);
     }
 
+    // Crear categoría
+    public function createcategoriaAction()
+    {
+        $categoria = new \Application\Model\Categoria();
+
+        if ($this->getRequest()->isPost()) {
+            $data = $this->params()->fromPost();
+            
+            // Convertir checkbox activo
+            $data['activo'] = isset($data['activo']) ? 1 : 0;
+            
+            $categoria->exchangeArray($data);
+            
+            $validation = $categoria->isValid();
+            if ($validation === true) {
+                try {
+                    // Verificar si el nombre ya existe
+                    if ($this->getCategoriaTable()->nombreExists($categoria->nombre)) {
+                        return new ViewModel([
+                            'categoria' => $categoria,
+                            'errors' => ['nombre' => 'Ya existe una categoría con este nombre']
+                        ]);
+                    }
+                    
+                    $this->getCategoriaTable()->saveCategoria($categoria);
+                    return $this->redirect()->toRoute('categorias');
+                } catch (\Exception $e) {
+                    return new ViewModel([
+                        'categoria' => $categoria,
+                        'errors' => ['general' => 'Error al crear la categoría']
+                    ]);
+                }
+            } else {
+                return new ViewModel([
+                    'categoria' => $categoria,
+                    'errors' => $validation
+                ]);
+            }
+        }
+
+        return new ViewModel([
+            'categoria' => $categoria
+        ]);
+    }
+
+    // Editar categoría
+    public function editcategoriaAction()
+    {
+        $id = $this->params()->fromRoute('id');
+        if (!$id) {
+            return $this->redirect()->toRoute('categorias');
+        }
+
+        try {
+            $categoriaTable = $this->getCategoriaTable();
+            $categoria = $categoriaTable->getCategoria($id);
+
+            if ($this->getRequest()->isPost()) {
+                $data = $this->params()->fromPost();
+                
+                // Convertir checkbox activo
+                $data['activo'] = isset($data['activo']) ? 1 : 0;
+                
+                $categoria->exchangeArray($data);
+                $categoria->id = $id; // Asegurar el ID
+                
+                $validation = $categoria->isValid();
+                if ($validation === true) {
+                    // Verificar si el nombre ya existe (excluyendo el actual)
+                    if ($categoriaTable->nombreExists($categoria->nombre, $id)) {
+                        return new ViewModel([
+                            'categoria' => $categoria,
+                            'errors' => ['nombre' => 'Ya existe otra categoría con este nombre']
+                        ]);
+                    }
+                    
+                    $categoriaTable->saveCategoria($categoria);
+                    return $this->redirect()->toRoute('categorias');
+                } else {
+                    return new ViewModel([
+                        'categoria' => $categoria,
+                        'errors' => $validation
+                    ]);
+                }
+            }
+
+            return new ViewModel([
+                'categoria' => $categoria
+            ]);
+        } catch (\Exception $e) {
+            return $this->redirect()->toRoute('categorias');
+        }
+    }
+
+    // Eliminar categoría
+    public function deletecategoriaAction()
+    {
+        $id = $this->params()->fromRoute('id');
+        if (!$id) {
+            return $this->redirect()->toRoute('categorias');
+        }
+
+        try {
+            $this->getCategoriaTable()->deleteCategoria($id);
+        } catch (\Exception $e) {
+            // Error al eliminar (puede tener productos asociados)
+        }
+
+        return $this->redirect()->toRoute('categorias');
+    }
+
 
 }

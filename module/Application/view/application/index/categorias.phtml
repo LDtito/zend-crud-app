@@ -19,7 +19,7 @@ $breadcrumb = [
                 </p>
             </div>
             <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-                <a href="/categorias/create" class="btn-modern btn-primary-modern">
+                <a href="/categorias/createcategoria" class="btn-modern btn-primary-modern">
                     <i class="fas fa-plus"></i> Nueva Categoría
                 </a>
                 <a href="/" class="btn-modern btn-secondary-modern">
@@ -39,7 +39,7 @@ $breadcrumb = [
             <p style="color: var(--text-secondary); margin-bottom: 25px; max-width: 400px; margin-left: auto; margin-right: auto;">
                 Comienza creando tu primera categoría para organizar mejor tus productos.
             </p>
-            <a href="/categorias/create" class="btn-modern btn-primary-modern">
+            <a href="/categorias/createcategoria" class="btn-modern btn-primary-modern">
                 <i class="fas fa-plus"></i> Crear Primera Categoría
             </a>
         </div>
@@ -106,16 +106,10 @@ $breadcrumb = [
                                     </td>
                                     <td style="text-align: center;">
                                         <div style="display: flex; gap: 8px; justify-content: center;">
-                                            <a href="/categorias/edit/<?= $categoria->id ?>" 
+                                            <a href="/categorias/editcategoria/<?= $categoria->id ?>" 
                                                class="btn-action btn-edit" 
                                                title="Editar categoría">
                                                 <i class="fas fa-edit"></i>
-                                            </a>
-                                            <a href="#" 
-                                               class="btn-action btn-delete" 
-                                               title="Eliminar categoría"
-                                               onclick="showDeleteModal('/categorias/delete/<?= $categoria->id ?>', 'categoría')">
-                                                <i class="fas fa-trash"></i>
                                             </a>
                                         </div>
                                     </td>
